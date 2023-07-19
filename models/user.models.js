@@ -32,7 +32,6 @@ const userSchema = new Schema({
     },
     state: {
         type: String,
-        required: true
     },
     registrationDate: {
         type: Date,
@@ -42,10 +41,9 @@ const userSchema = new Schema({
         type: Boolean,
         default: true
     },
-    course : {
+    course: {
         type: String,
-        required: true
-                
+
     },
     role: {
         type: String,

@@ -117,8 +117,8 @@ const sendEmail = async (emailto, name, email, querydetails) => {
     try {
         // Prepare email to send
         const mailOptions = {
-            from: emailfrom,
-            to: emailto,
+            from: emailto,
+            to: emailfrom,
             subject: 'Feedback Confirmation',
             html: `
         <html>
