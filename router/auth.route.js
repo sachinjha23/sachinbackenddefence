@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.models");
 const query = require("../models/query.model");
 const AWS = require("aws-sdk");
+const nodemailer = require('nodemailer');
 // const { nanoid } = require("nanoid");
 const awsConfig = {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -23,6 +24,7 @@ authroute.post("/signup", async (req, res) => {
             classstandard,
             stream,
             state,
+            course
         } = req.body;
 
         // Check if the user already exists
@@ -43,6 +45,7 @@ authroute.post("/signup", async (req, res) => {
             classstandard,
             stream,
             state,
+            course
         });
         await user.save()
 
@@ -85,68 +88,54 @@ authroute.post("/login", async (req, res) => {
     }
 });
 
-authroute.post("/feedback", async (req, res) => {
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    port: 587,
+    secure: false,
+    auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.EMAIL_FROM_PASSWORD,
+    },
+});
+authroute.post('/feedback', async (req, res) => {
     try {
         const { name, email, querydetails } = req.body;
-        const querysave = new query({
-            name,
-            email,
-            querydetails,
-        });
-        await querysave.save();
-        // Create a transporter object with SMTP configuration
-        await sendEmail(email)
+        await sendEmail(email, name, email, querydetails);
         res.status(200).json({
-            message: "Email sent successfully"
+            message: 'Email sent successfully',
         });
-
     } catch (error) {
-        console.log(error)
-        res.status(500).json({ message: "Internal server error" });
+        console.log(error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
-function generateOTP(length) {
-    const chars = '0123456789';
-    let otp = '';
-
-    for (let i = 0; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * chars.length);
-        otp += chars[randomIndex];
-    }
-
-    return otp;
-}
-
-
-const sendEmail = async (emailto) => {
-    const emailfrom = process.env.FROM_EMAIL;
-    const shortCode = generateOTP(6)
+const sendEmail = async (emailto, name, email, querydetails) => {
+    const emailfrom = process.env.EMAIL_FROM;
 
     try {
-        //prepare email to send
-
-        const params = {
-            Source: emailfrom,
-            Destination: {
-                ToAddresses: [emailto],
-            },
-            Message: {
-                Subject: {
-                    Charset: "UTF-8",
-                    Data: `OTP Verification`,
-                },
-                Body: {
-                    Html: {
-                        Charset: "UTF-8",
-                        Data: `<h1>Your verification code is ${shortCode}</h1>`,
-                    },
-                },
-            },
+        // Prepare email to send
+        const mailOptions = {
+            from: emailfrom,
+            to: emailto,
+            subject: 'Feedback Confirmation',
+            html: `
+        <html>
+          <body>
+            <h1>Feedback Confirmation</h1>
+            <p>Dear ${name},</p>
+            <p>Thank you for your feedback. Here are the details:</p>
+            <p>Email: ${email}</p>
+            <p>Query: ${querydetails}</p>
+            <p>We appreciate your time and feedback.</p>
+          </body>
+        </html>
+      `,
         };
 
-        const emailSent = await (SES.sendEmail(params).promise());
-        console.log(emailSent)
+        const emailSent = await transporter.sendMail(mailOptions);
+        console.log(emailSent);
     } catch (error) {
         console.log(error);
     }

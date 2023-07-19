@@ -26,11 +26,9 @@ const userSchema = new Schema({
     },
     classstandard: {
         type: String,
-        required: true
     },
     stream: {
         type: String,
-        required: true
     },
     state: {
         type: String,
@@ -43,6 +41,11 @@ const userSchema = new Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    course : {
+        type: String,
+        required: true
+                
     },
     role: {
         type: String,
