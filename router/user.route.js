@@ -6,8 +6,8 @@ const contactModel = require("../models/contact.model");
 const nodemailer = require('nodemailer');
 const AWS = require("aws-sdk");
 AWS.config.update({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY, region: process.env.region
+    accessKeyId: "AKIAT74HZ6GYILDIPV5I",
+    secretAccessKey: "BH35WoVXJ4FAMuAJgJUXHJjkRUfHYF/cU3ZRqmOlSRXk", region: process.env.region
 });
 
 userrouter.get("/getcourse", async (req, res) => {
