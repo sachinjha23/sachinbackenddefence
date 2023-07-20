@@ -69,7 +69,7 @@ userrouter.get('/contacts', (req, res) => {
 // Send email notification
 function sendEmailNotification(name, email, phoneNumber, course) {
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: "smtp.gmail.com",
         port: 587,
         secure: false,
         auth: {
@@ -92,12 +92,16 @@ function sendEmailNotification(name, email, phoneNumber, course) {
     };
 
     // Send the email
-    transporter.sendMail(message, (err, info) => {
-        if (err) {
-            console.error('Error sending email:', err);
-        } else {
-            console.log('Email sent:', info.response);
-        }
+    new Promise((resolve, reject) => {
+        transporter.sendMail(message, (error, response) => {
+            if (error) {
+                console.error('Error sending email:', error);
+                reject(error);
+            } else {
+                console.log('Email sent:', response.response);
+                resolve("Email sent successfully");
+            }
+        })
     });
 }
 
