@@ -8,10 +8,12 @@ const { adminroute } = require("./router/admin.route");
 const { authorization } = require("./middlewares/authrisation");
 const path = require('path');
 const app = express();
-app.use(express.urlencoded({ extended: true }));
 require("dotenv").config();
 app.use(express.json());
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+
+
 PORT = process.env.PORT || 8000;
 
 app.get("/", (req, res) => {
